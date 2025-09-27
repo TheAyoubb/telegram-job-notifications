@@ -1,0 +1,29 @@
+name: Job Alert Bot
+
+on:
+  schedule:
+    - cron: '0 6,10,16 * * *'  # UTC = 6h,10h,16h → 8h,12h,18h Suisse
+  workflow_dispatch:
+
+jobs:
+  job_alert:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyTelegramBotAPI requests beautifulsoup4
+
+      - name: Run bot
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python telegram-job-notifications.py
